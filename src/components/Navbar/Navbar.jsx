@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Menu,
   AccountCircle,
@@ -16,9 +17,11 @@ import {
   useTheme,
 } from '@mui/material';
 import { Link } from 'react-router-dom';
+import { Sidebar } from '..';
 
 export default function Navbar() {
   // hooks
+  const [mobileOpen, setMobileOpen] = useState(false);
   const isMobile = useMediaQuery('(max-width:600px)');
   const theme = useTheme();
   const isAuthenticated = true;
@@ -33,11 +36,14 @@ export default function Navbar() {
             height: '80px',
             display: 'flex',
             justifyContent: 'space-between',
+            marginLeft: { xs: '0', sm: '240px' },
           }}
         >
           {isMobile && (
             <IconButton
-              onClick={() => {}}
+              onClick={() => {
+                setMobileOpen((prevMobileOpen) => !prevMobileOpen);
+              }}
               edge='start'
               sx={{ color: 'inherit', outline: 'none' }}
             >
@@ -60,8 +66,14 @@ export default function Navbar() {
               <Button
                 component={Link}
                 to='/profile/:id'
-                style={{ color: 'inherit' }}
                 onClick={() => {}}
+                sx={{
+                  color: 'inherit',
+                  ':hover': {
+                    color: 'white !important',
+                    textDecoration: 'none',
+                  },
+                }}
               >
                 {isMobile && <>My movies &nbsp;</>}
                 <Avatar
@@ -74,6 +86,35 @@ export default function Navbar() {
           {isMobile && 'Search...'}
         </Toolbar>
       </AppBar>
+      {/* ------- */}
+      <Box>
+        <nav
+          style={
+            isMobile
+              ? { display: 'none' }
+              : { display: 'block', width: '240px', flexShrink: 0 }
+          }
+        >
+          {isMobile ? (
+            <Drawer
+              variant='temporary'
+              anchor='right'
+              open={mobileOpen}
+              ModalProps={{ keepMounted: true }}
+              sx={{ width: '240px' }}
+              onClose={() => {
+                setMobileOpen((prevMobileOpen) => !prevMobileOpen);
+              }}
+            >
+              <Sidebar setMobileOpen={setMobileOpen} />
+            </Drawer>
+          ) : (
+            <Drawer variant='permanent' open>
+              <Sidebar setMobileOpen={setMobileOpen} />
+            </Drawer>
+          )}
+        </nav>
+      </Box>
     </>
   );
 }
